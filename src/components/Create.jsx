@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { nanoid } from "nanoid";
+import { ProductContext } from "../utils/Context";
 
 const Create = () => {
+  const { products, setProducts } = useContext(ProductContext);
   const [title, settitle] = useState("");
   const [image, setimage] = useState("");
   const [category, setcategory] = useState("");
@@ -9,16 +12,35 @@ const Create = () => {
 
   const AddProductHandler = (e) => {
     e.preventDefault();
+
+    if (
+      title.trim().length < 5 ||
+      image.trim().length < 5 ||
+      category.trim().length < 5 ||
+      price.trim().length < 1 ||
+      description.trim().length < 5
+    ) {
+        alert("fill all the fields");
+      return;
+    }
+
     const product = {
+      id: nanoid(),
       title,
       image,
       category,
       price,
       description,
     };
-    console.log(product);
+    setProducts([...products, product]);
+
+    settitle("");   
+    setimage("");
+    setcategory("");
+    setprice("");
+    setdescription("");
   };
-  
+
   return (
     <form
       onSubmit={AddProductHandler}
