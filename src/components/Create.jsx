@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { ProductContext } from "../utils/Context";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Create = () => {
   const navigate = useNavigate();
@@ -29,38 +30,30 @@ const Create = () => {
       title,
       image,
       category,
-      price,
+      price: Number(price),
       description,
     };
-
+    
+    toast.success("Product added successfully");
     addProduct(newProduct);
     navigate("/");
-
-    setTitle("");
-    setImage("");
-    setCategory("");
-    setPrice("");
-    setDescription("");
   };
 
   return (
-    <form
-      onSubmit={AddProductHandler}
-      className="flex flex-col items-center p-[5%] w-screen h-screen "
-    >
+    <form onSubmit={AddProductHandler} className="flex flex-col items-center p-[5%] w-screen h-screen">
       <h1 className="mb-5 w-1/2 text-3xl">Add New Product</h1>
       <input
         type="url"
         placeholder="image link"
         className="text-xl bg-zinc-100 rounded p-3 w-1/2 mb-3"
-        onChange={(e) => setimage(e.target.value)}
+        onChange={(e) => setImage(e.target.value)}
         value={image}
       />
       <input
         type="text"
         placeholder="Title"
         className="text-xl bg-zinc-100 rounded p-3 w-1/2 mb-3"
-        onChange={(e) => settitle(e.target.value)}
+        onChange={(e) => setTitle(e.target.value)}
         value={title}
       />
       <div className="w-1/2 flex justify-between">
@@ -68,19 +61,19 @@ const Create = () => {
           type="text"
           placeholder="category"
           className="text-xl bg-zinc-100 rounded p-3 w-[48%] mb-3"
-          onChange={(e) => setcategory(e.target.value)}
+          onChange={(e) => setCategory(e.target.value)}
           value={category}
         />
         <input
           type="number"
           placeholder="price"
           className="text-xl bg-zinc-100 rounded p-3 w-[48%] mb-3"
-          onChange={(e) => setprice(e.target.value)}
+          onChange={(e) => setPrice(e.target.value)}
           value={price}
         />
       </div>
       <textarea
-        onChange={(e) => setdescription(e.target.value)}
+        onChange={(e) => setDescription(e.target.value)}
         placeholder="enter product description here..."
         value={description}
         className="text-xl bg-zinc-100 rounded p-3 w-1/2 mb-3"

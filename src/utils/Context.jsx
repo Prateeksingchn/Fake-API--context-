@@ -1,49 +1,59 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import Nav from "./Nav";
-import { ProductContext } from "../utils/Context";
-import Loading from "./Loading";
+import React, { createContext, useEffect, useState } from "react";
 
-const Home = () => {  
-  const { getAllProducts, getProductsByCategory, isLoading } = useContext(ProductContext);
-  const { search } = useLocation();
-  const category = decodeURIComponent(search.split('=')[1]);
+export const ProductContext = createContext();
 
-  const [displayProducts, setDisplayProducts] = useState([]);
+const Context = ({ children }) => {
+  const [products, setProducts] = useState(() => {
+    const storedProducts = localStorage.getItem("products");
+    return storedProducts ? JSON.parse(storedProducts) : [];
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (category && category !== "undefined") {
-      setDisplayProducts(getProductsByCategory(category));
-    } else {
-      setDisplayProducts(getAllProducts());
-    }
-  }, [category, getAllProducts, getProductsByCategory]);
+    setIsLoading(false);
+  }, []);
 
-  return !isLoading ? (
-    <>
-      <Nav />
-      <div className="w-[85%] p-10 pt-[5%] flex flex-wrap overflow-x-hidden overflow-y-auto">
-        {displayProducts.map((p) => ( 
-          <Link 
-            key={p.id}
-            to={`/details/${p.id}`}
-            className="mr-3 mb-3 card p-3 border shadow-sm rounded-xl w-[18%] h-[30vh] flex flex-col justify-center items-center">
-            <div
-              className="hover:scale-110 duration-300 mb-3 w-full h-[80%] bg-contain bg-no-repeat bg-center"
-              style={{
-                backgroundImage: `url(${p.image})`,
-              }}
-            ></div>
-            <h1 className="hover:text-blue-500 duration-300">
-              {p.title}
-            </h1>
-          </Link>
-        ))}
-      </div>
-    </>
-  ) : (
-    <Loading />
+  useEffect(() => {
+    localStorage.setItem("products", JSON.stringify(products));
+  }, [products]);
+
+  const getAllProducts = () => products;
+
+  const getProductById = (id) => products.find(p => p.id === id || p.id === Number(id));
+
+  const getProductsByCategory = (category) => products.filter(p => p.category.toLowerCase() === category.toLowerCase());
+
+  const addProduct = (newProduct) => {
+    const updatedProducts = [...products, { ...newProduct, id: Date.now().toString() }];
+    setProducts(updatedProducts);
+  };
+
+  const updateProduct = (id, updatedProduct) => {
+    const updatedProducts = products.map(p => 
+      p.id === id || p.id === Number(id) ? { ...p, ...updatedProduct } : p
+    );
+    setProducts(updatedProducts);
+  };
+
+  const deleteProduct = (id) => {
+    const updatedProducts = products.filter(p => p.id !== id && p.id !== Number(id));
+    setProducts(updatedProducts);
+  };
+
+  return (
+    <ProductContext.Provider value={{
+      products,
+      isLoading,
+      getAllProducts,
+      getProductById,
+      getProductsByCategory,
+      addProduct,
+      updateProduct,
+      deleteProduct
+    }}>
+      {children}
+    </ProductContext.Provider>
   );
 };
 
-export default Home;
+export default Context;

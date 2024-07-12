@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ProductContext } from "../utils/Context";
 import Loading from "./Loading";
+import { toast } from "react-toastify";
 
 const Details = () => {
-  const { getProductById } = useContext(ProductContext);
+  const navigate = useNavigate();
+  const { getProductById, deleteProduct } = useContext(ProductContext);
   const [product, setProduct] = useState(null);
   const { id } = useParams();
 
@@ -13,6 +15,15 @@ const Details = () => {
     setProduct(fetchedProduct);
   }, [id, getProductById]);
 
+  const ProductDeleteHandler = () => {
+    if (product) {
+      deleteProduct(product.id);
+      navigate("/");
+      toast.success("Product deleted successfully");
+    }
+  };
+
+  if (!product) return <Loading />;
   return product ? (
     <div className="w-[70%] h-full flex items-center justify-center m-auto p-[10%]">
       <img
@@ -29,9 +40,9 @@ const Details = () => {
           <Link to={`/edit/${id}`} className="py-2 px-5 border rounded border-blue-200 text-blue-300">
             Edit
           </Link>
-          <Link to={`/delete/${id}`} className="py-2 px-5 border rounded border-blue-200 text-blue-300">
+          <button onClick={() => ProductDeleteHandler(product.id)} to={`/delete/${id}`} className="py-2 px-5 border rounded border-blue-200 text-blue-300">
             Delete
-          </Link>
+          </button>
         </div>
       </div>
     </div>
