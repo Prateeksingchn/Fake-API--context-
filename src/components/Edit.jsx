@@ -54,6 +54,7 @@ const Edit = () => {
     };
 
     updateProduct(id, updatedProduct);
+    toast.success("Product updated successfully");
     navigate("/");
   };
 

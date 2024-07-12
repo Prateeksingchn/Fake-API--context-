@@ -15,7 +15,7 @@ const App = () => {
   return (
     <div className='h-screen w-screen flex'>
       {showHomeLink && (
-        <Link to="/" className='text-red-300 absolute left-[17%] top-[3%] '>
+        <Link to="/" className='text-red-300 absolute left-[17.5%] top-[2.5%] '>
           HOME
         </Link>
       )}

@@ -27,7 +27,7 @@ const Details = () => {
   return product ? (
     <div className="w-[70%] h-full flex items-center justify-center m-auto p-[10%]">
       <img
-        className="h-[35vh] w-[30vh] mr-12 bg-contain bg-no-repeat bg-center"
+        className="h-[35vh] w-[30vh] mr-12 bg-contain "
         src={product.image}
         alt={product.title}
       />
