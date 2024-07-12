@@ -1,32 +1,49 @@
-import axios from "axios";
-import React, { createContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import Nav from "./Nav";
+import { ProductContext } from "../utils/Context";
+import Loading from "./Loading";
 
-export const ProductContext = createContext();
+const Home = () => {  
+  const { getAllProducts, getProductsByCategory, isLoading } = useContext(ProductContext);
+  const { search } = useLocation();
+  const category = decodeURIComponent(search.split('=')[1]);
 
-const Context = ({ children }) => {
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const getProducts = async () => {
-    try {
-      const response = await axios.get("https://fakestoreapi.com/products");
-      setProducts(response.data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [displayProducts, setDisplayProducts] = useState([]);
 
   useEffect(() => {
-    getProducts();
-  }, []);
+    if (category && category !== "undefined") {
+      setDisplayProducts(getProductsByCategory(category));
+    } else {
+      setDisplayProducts(getAllProducts());
+    }
+  }, [category, getAllProducts, getProductsByCategory]);
 
-  return (
-    <ProductContext.Provider value={{ products, setProducts, isLoading }}>
-      {children}
-    </ProductContext.Provider>
-  )
+  return !isLoading ? (
+    <>
+      <Nav />
+      <div className="w-[85%] p-10 pt-[5%] flex flex-wrap overflow-x-hidden overflow-y-auto">
+        {displayProducts.map((p) => ( 
+          <Link 
+            key={p.id}
+            to={`/details/${p.id}`}
+            className="mr-3 mb-3 card p-3 border shadow-sm rounded-xl w-[18%] h-[30vh] flex flex-col justify-center items-center">
+            <div
+              className="hover:scale-110 duration-300 mb-3 w-full h-[80%] bg-contain bg-no-repeat bg-center"
+              style={{
+                backgroundImage: `url(${p.image})`,
+              }}
+            ></div>
+            <h1 className="hover:text-blue-500 duration-300">
+              {p.title}
+            </h1>
+          </Link>
+        ))}
+      </div>
+    </>
+  ) : (
+    <Loading />
+  );
 };
 
-export default Context;
+export default Home;

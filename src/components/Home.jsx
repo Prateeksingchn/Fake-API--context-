@@ -3,39 +3,27 @@ import { Link, useLocation } from "react-router-dom";
 import Nav from "./Nav";
 import { ProductContext } from "../utils/Context";
 import Loading from "./Loading";
-import axios from "../utils/Axios";
 
 const Home = () => {  
-  const { products, isLoading } = useContext(ProductContext);
+  const { getAllProducts, getProductsByCategory, isLoading } = useContext(ProductContext);
   const { search } = useLocation();
   const category = decodeURIComponent(search.split('=')[1]);
 
-  const [filteredProducts, setFilteredProducts] = useState([]);
-
-  const getProductCategory = async () => {
-    try {
-      const { data } = await axios.get(`/products/category/${category}`);
-      setFilteredProducts(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [displayProducts, setDisplayProducts] = useState([]);
 
   useEffect(() => {
     if (category && category !== "undefined") {
-      getProductCategory();
+      setDisplayProducts(getProductsByCategory(category));
     } else {
-      setFilteredProducts(products);
+      setDisplayProducts(getAllProducts());
     }
-  }, [category, products]);
-
-  const displayProducts = category && category !== "undefined" ? filteredProducts : products;
+  }, [category, getAllProducts, getProductsByCategory]);
 
   return !isLoading ? (
     <>
       <Nav />
       <div className="w-[85%] p-10 pt-[5%] flex flex-wrap overflow-x-hidden overflow-y-auto">
-        {displayProducts && displayProducts.map((p) => ( 
+        {displayProducts.map((p) => ( 
           <Link 
             key={p.id}
             to={`/details/${p.id}`}

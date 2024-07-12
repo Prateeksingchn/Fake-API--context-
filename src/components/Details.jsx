@@ -1,27 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import axios from "../utils/Axios";
+import { useParams, Link } from "react-router-dom";
+import { ProductContext } from "../utils/Context";
 import Loading from "./Loading";
 
 const Details = () => {
-  const { products, setProducts } = useContext(ProductContext);
+  const { getProductById } = useContext(ProductContext);
   const [product, setProduct] = useState(null);
   const { id } = useParams();
 
-  // const getSingleProduct = async () => {
-  //   try {
-  //     const { data } = await axios.get(`/products/${id}`);
-  //     console.log(data);
-  //     setProduct(data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getSingleProduct();
-  // }, [id]);
-
+  useEffect(() => {
+    const fetchedProduct = getProductById(id);
+    setProduct(fetchedProduct);
+  }, [id, getProductById]);
 
   return product ? (
     <div className="w-[70%] h-full flex items-center justify-center m-auto p-[10%]">
@@ -45,7 +35,7 @@ const Details = () => {
         </div>
       </div>
     </div>
-  ) : ( 
+  ) : (
     <Loading />
   );
 };

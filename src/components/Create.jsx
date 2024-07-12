@@ -1,14 +1,15 @@
 import React, { useContext, useState } from "react";
-import { nanoid } from "nanoid";
 import { ProductContext } from "../utils/Context";
+import { useNavigate } from "react-router-dom";
 
 const Create = () => {
-  const { products, setProducts } = useContext(ProductContext);
-  const [title, settitle] = useState("");
-  const [image, setimage] = useState("");
-  const [category, setcategory] = useState("");
-  const [price, setprice] = useState("");
-  const [description, setdescription] = useState("");
+  const navigate = useNavigate();
+  const { addProduct } = useContext(ProductContext);
+  const [title, setTitle] = useState("");
+  const [image, setImage] = useState("");
+  const [category, setCategory] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
 
   const AddProductHandler = (e) => {
     e.preventDefault();
@@ -20,25 +21,26 @@ const Create = () => {
       price.trim().length < 1 ||
       description.trim().length < 5
     ) {
-        alert("fill all the fields");
+      alert("Please fill all the fields");
       return;
     }
 
-    const product = {
-      id: nanoid(),
+    const newProduct = {
       title,
       image,
       category,
       price,
       description,
     };
-    setProducts([...products, product]);
 
-    settitle("");   
-    setimage("");
-    setcategory("");
-    setprice("");
-    setdescription("");
+    addProduct(newProduct);
+    navigate("/");
+
+    setTitle("");
+    setImage("");
+    setCategory("");
+    setPrice("");
+    setDescription("");
   };
 
   return (
