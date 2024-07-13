@@ -6,85 +6,134 @@ import { toast } from "react-toastify";
 const Create = () => {
   const navigate = useNavigate();
   const { addProduct } = useContext(ProductContext);
-  const [title, setTitle] = useState("");
-  const [image, setImage] = useState("");
-  const [category, setCategory] = useState("");
-  const [price, setPrice] = useState("");
-  const [description, setDescription] = useState("");
+  const [formData, setFormData] = useState({
+    title: "",
+    image: "",
+    category: "",
+    price: "",
+    description: "",
+  });
 
-  const AddProductHandler = (e) => {
-    e.preventDefault();
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
+  const validateForm = () => {
+    const { title, image, category, price, description } = formData;
     if (
       title.trim().length < 5 ||
       image.trim().length < 5 ||
-      category.trim().length < 5 ||
+      category.trim().length < 3 ||
       price.trim().length < 1 ||
       description.trim().length < 5
     ) {
-      alert("Please fill all the fields");
-      return;
+      toast.error("Please fill all the fields correctly");
+      return false;
     }
+    return true;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
 
     const newProduct = {
-      title,
-      image,
-      category,
-      price: Number(price),
-      description,
+      ...formData,
+      price: Number(formData.price),
     };
     
-    toast.success("Product added successfully");
     addProduct(newProduct);
+    toast.success("Product added successfully");
     navigate("/");
   };
 
   return (
-    <form onSubmit={AddProductHandler} className="flex flex-col items-center p-[5%] w-screen h-screen">
-      <h1 className="mb-5 w-1/2 text-3xl">Add New Product</h1>
-      <input
-        type="url"
-        placeholder="image link"
-        className="text-xl bg-zinc-100 rounded p-3 w-1/2 mb-3"
-        onChange={(e) => setImage(e.target.value)}
-        value={image}
-      />
-      <input
-        type="text"
-        placeholder="Title"
-        className="text-xl bg-zinc-100 rounded p-3 w-1/2 mb-3"
-        onChange={(e) => setTitle(e.target.value)}
-        value={title}
-      />
-      <div className="w-1/2 flex justify-between">
-        <input
-          type="text"
-          placeholder="category"
-          className="text-xl bg-zinc-100 rounded p-3 w-[48%] mb-3"
-          onChange={(e) => setCategory(e.target.value)}
-          value={category}
-        />
-        <input
-          type="number"
-          placeholder="price"
-          className="text-xl bg-zinc-100 rounded p-3 w-[48%] mb-3"
-          onChange={(e) => setPrice(e.target.value)}
-          value={price}
-        />
+    <div className="min-h-screen w-full bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+      <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="flex flex-col md:flex-row">
+          <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
+            <h2 className="text-center text-3xl font-extrabold text-gray-900 mb-6">
+              Add New Product
+            </h2>
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div>
+                <input
+                  type="url"
+                  name="image"
+                  required
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Image URL"
+                  onChange={handleInputChange}
+                  value={formData.image}
+                />
+              </div>
+              <div>
+                <input
+                  type="text"
+                  name="title"
+                  required
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Title"
+                  onChange={handleInputChange}
+                  value={formData.title}
+                />
+              </div>
+              <div className="flex space-x-4">
+                <input
+                  type="text"
+                  name="category"
+                  required
+                  className="appearance-none rounded-md relative block w-1/2 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Category"
+                  onChange={handleInputChange}
+                  value={formData.category}
+                />
+                <input
+                  type="number"
+                  name="price"
+                  required
+                  className="appearance-none rounded-md relative block w-1/2 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Price"
+                  onChange={handleInputChange}
+                  value={formData.price}
+                />
+              </div>
+              <div>
+                <textarea
+                  name="description"
+                  required
+                  className="appearance-none rounded-md relative block w-full px-3 pt-2 pb-12 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Enter product description here..."
+                  rows={4}
+                  onChange={handleInputChange}
+                  value={formData.description}
+                ></textarea>
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Add New Product
+                </button>
+              </div>
+            </form>
+          </div>
+          <div className="w-full md:w-1/2 bg-indigo-600">
+            <img
+              className="w-full h-full object-cover"
+              src="https://images.unsplash.com/photo-1720643710112-6bc7f98621bd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwzMnx8fGVufDB8fHx8fA%3D%3D"
+              alt="Product background"
+            />
+          </div>
+        </div>
       </div>
-      <textarea
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="enter product description here..."
-        value={description}
-        className="text-xl bg-zinc-100 rounded p-3 w-1/2 mb-3"
-        rows={10}
-      ></textarea>
-      <div className="w-1/2">
-        <button className="py-2 px-5 border rounded border-blue-200 text-blue-300">
-          Add New Product
-        </button>
-      </div>
-    </form>
+    </div>
   );
 };
 
